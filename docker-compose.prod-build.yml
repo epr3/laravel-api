@@ -1,0 +1,10 @@
+version: "3.5"
+
+services:
+  composer:
+    container_name: laravel-api-composer-prod-build
+    restart: "no"
+    image: prooph/composer:7.3
+    volumes:
+      - ./src:/app
+    command: ["install", "--no-dev", "--prefer-dist"]

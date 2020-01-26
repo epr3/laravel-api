@@ -1,0 +1,30 @@
+version: "3.5"
+
+services:
+  phpunit:
+    container_name: laravel-api-phpunit
+    build:
+      context: .
+      dockerfile: containers/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - ./src:/var/www/html
+    restart: "no"
+    command: 'sh -c "./vendor/bin/phpunit --coverage-html ./tests/coverage_results"'
+  phpcs:
+    container_name: laravel-api-phpcs
+    build:
+      context: .
+      dockerfile: containers/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - ./src:/var/www/html
+    restart: "no"
+    command: 'sh -c "./vendor/bin/phpcs -p --standard=./phpcs.xml --extensions=php"'
+
+networks:
+  default:
+    external:
+      name: laravel-api-network

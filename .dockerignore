@@ -1,0 +1,16 @@
+src/node_modules
+src/storage/logs/*
+src/storage/framework/views/*
+src/storage/framework/cache/*
+src/storage/framework/sessions/*
+src/.env*
+src/.gitignore
+src/.gitattributes
+src/.editorconfig
+src/.styleci.yml
+src/composer.lock
+src/phpunit.xml
+src/server.php
+src/yarn.lock
+src/package.json
+src/webpack.mix.js

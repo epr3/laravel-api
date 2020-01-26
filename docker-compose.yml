@@ -1,0 +1,94 @@
+version: "3.5"
+
+services:
+  nginx:
+    container_name: laravel-api-nginx
+    depends_on:
+      - php
+    build:
+      context: .
+      dockerfile: ./containers/nginx/Dockerfile
+    expose:
+      - 80
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html
+
+  php:
+    container_name: laravel-api-php
+    command: "/usr/bin/supervisord -c /etc/supervisord.conf"
+    depends_on:
+      - database
+      - redis
+    build:
+      context: .
+      dockerfile: containers/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - ./src:/var/www/html
+    env_file: ./src/.env
+
+  database:
+    container_name: laravel-api-mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "secret"
+      MYSQL_DATABASE: "laravel_api"
+      MYSQL_USER: "laravel_api"
+      MYSQL_PASSWORD: "secret"
+    volumes:
+      - laravel-api_mysql:/var/lib/mysql
+    ports:
+      - 33006:3306
+
+  redis:
+    container_name: laravel-api-redis
+    image: redis:5
+
+  mailhog:
+    container_name: laravel-api-mailhog
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 84:8025
+
+  redis-commander:
+    container_name: laravel-api-redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      REDIS_HOSTS: >
+        default:redis:6379:0,
+        cache:redis:6379:1,
+        session:redis:6379:2,
+        queue:redis:6379:3
+    ports:
+      - 83:8081
+
+  phpmyadmin:
+    container_name: laravel-api-phpmyadmin
+    depends_on:
+      - database
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 81:80
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+
+  composer:
+    container_name: laravel-api-composer
+    restart: "no"
+    image: prooph/composer:7.3
+    volumes:
+      - ./src:/app
+    entrypoint: composer
+
+volumes:
+  laravel-api_mysql:
+
+networks:
+  default:
+    name: laravel-api-network
